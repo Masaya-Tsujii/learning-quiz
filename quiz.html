@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学び方アップグレードクイズ！</title>
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e9eef2; 
+            color: #333;
+            /* display: flex; を削除 またはコメントアウト */
+            /* align-items: center; を削除 またはコメントアウト */
+            /* min-height: 100vh; を削除 またはコメントアウト */
+            overflow-x: hidden; /* 横スクロールを禁止 */
+        }
+
+        .infographic-carousel {
+            /* display: flex; を削除 またはコメントアウト */
+            /* gap: 30px; を削除 またはコメントアウト */
+            padding: 20px 0; /* 上下のパディングに変更 */
+            width: 100%;
+        }
+
+        .slide {
+            width: 1280px; 
+            height: 720px; 
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            padding: 40px 50px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            overflow: hidden;
+            position: relative;
+            /* flex-shrink: 0; を削除 */
+            text-align: center; 
+            margin: 30px auto; /* 上下マージンと左右中央寄せ */
+        }
+
+        /* スライドタイプごとの調整 */
+        .slide-title, .slide-final, .slide-answer-reveal {
+            justify-content: center;
+        }
+        .slide-quiz {
+             justify-content: flex-start; 
+             padding-top: 50px; 
+        }
+        .slide-explanation {
+            justify-content: flex-start; 
+            text-align: left; 
+            padding-top: 50px; 
+        }
+
+        .slide-header h1 {
+            font-size: 60px; 
+            color: #1a2b48; 
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .slide-header p {
+            font-size: 24px; 
+            color: #4a5568; 
+            margin-bottom: 30px;
+            line-height: 1.6;
+            max-width: 850px; 
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .quiz-number {
+            font-size: 48px; 
+            color: #d35400; 
+            margin-bottom: 15px; 
+            font-weight: 600;
+        }
+
+        .question {
+            font-size: 32px; 
+            color: #2c3e50; 
+            margin-bottom: 25px; 
+            line-height: 1.55;
+            max-width: 950px; 
+            margin-left: auto;
+            margin-right: auto;
+            max-height: 220px; 
+            overflow-y: auto; 
+            padding-right: 10px; 
+            text-align: left; /* 問題文が長い場合、左寄せの方が見やすいことも */
+        }
+
+        .options {
+            list-style-type: none;
+            padding: 0;
+            margin: 0 auto 20px auto; 
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px; 
+            width: 90%;
+            max-width: 950px; 
+        }
+
+        .options li {
+            background-color: #f0f3f7; 
+            padding: 20px 25px; 
+            border-radius: 8px; 
+            font-size: 22px; 
+            border: 2px solid #d1d8e0; 
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04); 
+        }
+        .options li:hover {
+            background-color: #e4e9ed;
+            border-color: #b8c1cc;
+            transform: translateY(-2px); 
+        }
+        .options li strong { 
+            font-weight: 700;
+            margin-right: 8px;
+            color: #2980b9;
+        }
+
+        .answer-reveal-content h2 {
+            font-size: 68px; 
+            color: #27ae60; 
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        .answer-reveal-content .correct-option-letter {
+            display: inline-block;
+            font-size: 110px; 
+            color: #2ecc71; 
+            padding: 18px 36px;
+            background-color: #f0fff4; 
+            border: 3px solid #2ecc71;
+            border-radius: 18px;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.25);
+        }
+         .answer-reveal-content p {
+            font-size: 26px;
+            color: #555;
+        }
+
+        .explanation-title {
+            font-size: 40px; 
+            color: #2c3e50; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            font-weight: 600;
+        }
+
+        .explanation-text {
+            font-size: 21px; 
+            line-height: 1.8; 
+            color: #34495e; 
+            max-width: 950px; 
+            margin: 0 auto; 
+            overflow-y: auto; 
+            height: calc(100% - 100px); 
+            padding-right: 15px; 
+        }
+        .explanation-text strong {
+            font-weight: 600;
+        }
+        .explanation-text .strategy-name {
+            font-weight: bold;
+            color: #8e44ad; 
+            background-color: #f3e5f5; 
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .explanation-text .action-prompt {
+            font-weight: bold;
+            color: #e67e22; 
+            display: block;
+            margin-top: 12px; 
+            margin-bottom: 4px; 
+        }
+
+        .explanation-text ul, .explanation-text ol { 
+            list-style-type: disc; 
+            padding-left: 25px; 
+            margin-top: 8px; 
+        }
+        .explanation-text ol { 
+            list-style-type: decimal;
+        }
+        .explanation-text ul li, .explanation-text ol li { 
+            margin-bottom: 10px; 
+        }
+
+        .slide-final .final-message {
+            font-size: 30px; 
+            line-height: 1.7;
+            max-width: 850px;
+        }
+
+        .placeholder-img {
+            max-width: 70%; 
+            max-height: 280px; 
+            height: auto;
+            margin: 25px auto; 
+            border-radius: 8px;
+            background-color: #ecf0f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #bdc3c7;
+            font-size: 18px; 
+            border: 1px dashed #bdc3c7;
+        }
+    </style>
+</head>
+<body>
+
+<div class="infographic-carousel">
+
+    <section class="slide slide-title">
+        <header class="slide-header">
+            <h1>学び方アップグレードクイズ！</h1>
+            <p>キミの勉強法、本当に効果的？<br>科学的な「学びのコツ」をクイズで楽しくマスターしよう！<br>脳と友達になって、最強の自分を目指せ！</p>
+        </header>
+        <div class="placeholder-img" style="width:450px; height:253px;">[イラスト：元気なキャラクターと脳のイメージ]</div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ１】</h2>
+        <p class="question">「昨日やったばっかりなのに、もう忘れちゃった…」なんてこと、よくあるよね。新しいことを覚えた後、記憶にしっかり残すためには、いつ頃もう一度見直すのが一番効果的だと思う？</p>
+        <ul class="options">
+            <li><strong>A</strong>：テスト前日に、一気にまとめて見直す</li>
+            <li><strong>B</strong>：完全に忘れてから、思い出す練習をする</li>
+            <li><strong>C</strong>：覚えた内容が少し頭に残っている、24時間以内にもう一度見る</li>
+            <li><strong>D</strong>：気が向いたときに、ランダムに見直す</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">C</div>
+            <p>「覚えた内容が少し頭に残っている、24時間以内にもう一度見る」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">忘却との賢い戦い方！「また会ったね！」で記憶をロック！</h3>
+        <div class="explanation-text">
+            <p>初めて学んだことは、残念ながら時間が経つと脳からどんどん消えていっちゃうんだ（これを「忘却曲線」って言うよ）。でも大丈夫！完全に忘れる前に、つまり学習した当日か翌日（24時間以内が理想！）にもう一度その情報に触れると、脳が「お、これは大事な情報だな！」と認識して、記憶に残りやすくなるんだ。</p>
+            <p>これを「<span class="strategy-name">分散学習（ぶんさんがくしゅう）</span>」っていうんだ。一度に長時間頑張るより、少し時間を空けて、何回かに分けて復習する方が、ずーっと効率的に覚えられるよ。</p>
+            <p class="action-prompt">やってみよう！</p>
+            <ul>
+                <li>新しいことを習ったら、その日の夜か次の日に、まずは5分でもいいからサッと復習する時間を作ってみよう。</li>
+                <li>復習カレンダーを作って、「学習した日、1日後、3日後、1週間後…」みたいに、だんだん間隔を空けて復習する計画を立てるのも効果バツグンだよ。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ２】</h2>
+        <p class="question">教科書の内容をバッチリ頭に入れたい！そんな時、次のうち一番「記憶に残る」アクションはどれだろう？この問題は少し長めの文章で、どのように表示が調整されるかを確認するために、あえて長文にしています。果たして、選択肢はきちんと表示されるでしょうか。レイアウトの調整がうまくいっていると良いのですが。</p>
+        <ul class="options">
+            <li><strong>A</strong>：教科書を最初から最後まで、何度も何度も音読する</li>
+            <li><strong>B</strong>：重要なポイントだらけ！教科書のほとんどの行にマーカーを引く</li>
+            <li><strong>C</strong>：教科書をいったん閉じて、「えーっと、何が書いてあったかな？」と内容を思い出そうとする</li>
+            <li><strong>D</strong>：友達に教科書の内容をわかりやすく説明してもらう</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">C</div>
+            <p>「教科書をいったん閉じて、「えーっと、何が書いてあったかな？」と内容を思い出そうとする」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">脳の筋トレ！「思い出す」パワーで記憶を刻み込め！</h3>
+        <div class="explanation-text">
+            <p>教科書を何度も読む「再読」も一つの手だけど、実はもっと効果的なのが、情報を「思い出す」練習をすることなんだ。これを「<span class="strategy-name">テスト効果（てすとこうか）</span>」または「想起練習（そうきれんしゅう）」って言うよ。</p>
+            <p>勉強した内容を、何も見ないで思い出そうとすることで、脳の中の記憶の道が強くなるイメージ。ちょっと頑張って思い出したことほど、しっかり記憶に刻まれるんだ（これを「想起努力仮説」というよ）。</p>
+            <p class="action-prompt">やってみよう！</p>
+            <ul>
+                <li>教科書を読んだ後や授業が終わった後、少し時間を置いてから、大事なポイントを何も見ずに書き出してみよう。</li>
+                <li>自分で簡単な小テストを作って解いてみるのもいいね！間違えたところは、しっかり答えを確認して覚え直そう（この「フィードバック」が超重要！）。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ３】</h2>
+        <p class="question">歴史の勉強で、新しい出来事を覚えるとき、ただ年号や人名を暗記するだけじゃ、なんだか味気ないし忘れやすい…。もっと深く理解して、長く記憶に残すためには、どんな工夫がいいかな？</p>
+        <ul class="options">
+            <li><strong>A</strong>：年号と人名、出来事をセットで100回書く</li>
+            <li><strong>B</strong>：「なんでこの出来事が起きたの？」「前の時代のあれと関係ある？」みたいに、自分の言葉で意味や繋がりを考える</li>
+            <li><strong>C</strong>：友達とどっちが早く年号を暗唱できるか競争する</li>
+            <li><strong>D</strong>：教科書の説明文を、一字一句そのままノートに写す</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">B</div>
+            <p>「「なんでこの出来事が起きたの？」「前の時代のあれと関係ある？」みたいに、自分の言葉で意味や繋がりを考える」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">情報に「意味」をプラス！知識を自分だけの宝物にしよう！</h3>
+        <div class="explanation-text">
+            <p>新しい情報を学ぶとき、ただ丸暗記するんじゃなくて、その情報に「これはどういうことだろう？」「なぜそうなるの？」って問いかけたり、既に知っていることと「これって、あの話と似てるかも！」って関連付けたりする工夫を「<span class="strategy-name">精緻化（せいちか）</span>」って言うんだ。</p>
+            <p>情報に自分なりの意味やストーリーを加えることで、脳が情報を深く処理して（これを「深い処理」と呼ぶよ）、記憶に残りやすくなるんだ。例えば、歴史の出来事なら、その背景や原因、他の出来事との繋がりを考えてみると（例：「なぜこの革命が起こったのか？」）、ただの暗記事項じゃなくて、面白い物語みたいに感じられるかも！</p>
+            <p class="action-prompt">やってみよう！</p>
+            <ul>
+                <li>新しいことを学ぶとき、「なぜ？」「具体的に言うと？」「他の何と似てる？」と自分に質問してみよう。</li>
+                <li>学んだことを、自分の言葉で言い換えたり、身近な例に例えたりするのも効果的だよ。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ４】</h2>
+        <p class="question">英単語を覚えるとき、”important”, “export”, “portable”…みたいに、似たようなパーツを持つ単語がいくつかあった。こういうとき、どうやって覚えると効率がいいかな？</p>
+        <ul class="options">
+            <li><strong>A</strong>：1単語ずつ、ひたすら書いて覚える</li>
+            <li><strong>B</strong>：単語のパーツ（例：port）に共通の意味があることに気づき、それを利用してグループで覚える</li>
+            <li><strong>C</strong>：とにかくアルファベット順に、機械的に覚える</li>
+            <li><strong>D</strong>：友達と単語テストをして、間違えた単語だけを覚える</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">B</div>
+            <p>「単語のパーツ（例：port）に共通の意味があることに気づき、それを利用してグループで覚える」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">バラバラ情報にサヨナラ！「まとめワザ」で記憶の達人へ！</h3>
+        <div class="explanation-text">
+            <p>たくさんの情報や複雑な情報を、意味のある小さな「かたまり（チャンク）」に分けたり、逆にバラバラな情報を意味のある「かたまり」としてグループ化したりして覚えやすくする方法を「<span class="strategy-name">チャンキング</span>」って言うよ。</p>
+            <p>私たちの脳が一度に処理できる情報の量（ワーキングメモリ）には限りがあるけど、情報を意味のあるチャンクにまとめると、実質的に記憶できる情報の単位が増えるんだ。電話番号を「090-XXXX-XXXX」と区切ったり、歴史の年号を語呂合わせで覚えたりするのも、このテクニックの一種さ。</p>
+            <p class="action-prompt">やってみよう！</p>
+            <ul>
+                <li>英単語なら、接頭辞（例：re-, un-）や語幹、接尾辞（例：-tion, -ful）に注目して、同じパーツを持つ単語をまとめて覚えてみよう。</li>
+                <li>英文を読むとき、意味の切れ目でスラッシュ（／）を入れながら読む「スラッシュリーディング」も、文の構造をチャンクで捉えるのに役立つよ。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ５】</h2>
+        <p class="question">数学の問題が解けた！…でも、本当に理解できたかちょっと不安。そんなとき、自分の理解度を確かめて、さらに深めるために効果的なのは、次のうちどれ？</p>
+        <ul class="options">
+            <li><strong>A</strong>：同じ問題を、もう一度時間を計って解いてみる</li>
+            <li><strong>B</strong>：解答・解説をじっくり読み込んで、解き方のパターンを暗記する</li>
+            <li><strong>C</strong>：解き方や「なぜその公式を使ったのか」を、友達や先生になったつもりで説明してみる</li>
+            <li><strong>D</strong>：すぐに新しい、もっと難しい問題に挑戦する</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">C</div>
+            <p>「解き方や「なぜその公式を使ったのか」を、友達や先生になったつもりで説明してみる」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">先生ごっこで理解度MAX！「言葉にする力」を味方に！</h3>
+        <div class="explanation-text">
+            <p>学習した内容や、問題を解いた手順・根拠などを、自分自身に対して、あるいは他者に教えるつもりで、自分の言葉で説明してみる学習方略を「<span class="strategy-name">自己説明（じこせつめい）</span>」と言うよ。</p>
+            <p>「どうしてこの手順なの？」「この公式の意味は？」と自分で考えながら説明することで、頭の中の情報が整理されて、あいまいだった部分がハッキリするんだ。人に教えるつもりでやってみると、どこが分かっていないかが見えてくるし、理解もグンと深まるよ。Chiさんたちの研究では、自己説明をたくさんした生徒ほど、学習の成果が高かったという報告もあるんだ。</p>
+            <p class="action-prompt">やってみよう！</p>
+            <ul>
+                <li>数学の問題を解いた後、「この問題はね…」と、解き方のポイントや理由を声に出して説明してみよう。</li>
+                <li>教科書を読んだ後、その内容を家族やぬいぐるみに「今日はこんなこと習ったんだよ！」と話してみるのもいいね。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ６】</h2>
+        <p class="question">テスト勉強中。ある科目の特定の分野（例えば数学の「関数」）だけをずーっとやり続けるのと、いくつかの分野（例えば「関数」「図形」「確率」）をちょっとずつ混ぜながら勉強するの、どっちが実力アップに繋がりやすい？</p>
+        <ul class="options">
+            <li><strong>A</strong>：「関数」なら「関数」だけを徹底的に集中して、完璧にしてから次に進む</li>
+            <li><strong>B</strong>：「関数」の問題を少しやったら、次は「図形」、その次は「確率」と、あえて違う分野を交互にやる</li>
+            <li><strong>C</strong>：得意な分野だけをたくさん解いて、自信をつける</li>
+            <li><strong>D</strong>：苦手な分野は後回しにして、テスト直前にまとめてやる</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">B</div>
+            <p>「「関数」の問題を少しやったら、次は「図形」、その次は「確率」と、あえて違う分野を交互にやる」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">脳に変化球を！「まぜこぜ学習」で応用力をゲット！</h3>
+        <div class="explanation-text">
+            <p>特定のテーマだけを集中的に練習するんじゃなくて、あえて複数の異なる種類の問題やテーマを混ぜて練習する方法を「<span class="strategy-name">インターリービング</span>」って言うんだ。</p>
+            <p>野球のバッティング練習で、ストレートだけじゃなくカーブやスライダーも混ぜて打つ方が実戦に強くなるのと同じで、勉強も違う種類の問題に触れることで、脳が「これはどの知識を使えば解けるかな？」って考える力が鍛えられるんだ。これによって、本番のテストみたいに、どんな問題が出てくるかわからない状況でも対応できる応用力が身につくよ。</p>
+            <p class="action-prompt">やってみよう！</p>
+            <ul>
+                <li>数学の問題集を解くとき、1つの章が終わったらすぐに次の章に進むのではなく、前の章の問題と新しい章の問題を少しずつ混ぜて解いてみよう。</li>
+                <li>英単語を覚えるときも、単語学習の合間に文法問題を挟んだり、リスニングをしたりするのも効果的だよ。</li>
+                <li><strong>ただし！</strong>各分野の基本がわかっていないうちに混ぜると混乱しちゃうから、まずはそれぞれの基本をしっかり押さえてから試してみてね。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ７】</h2>
+        <p class="question">「ポモドーロ・テクニック」って聞いたことある？これは、人間の集中力に関するある性質を利用した時間管理術なんだ。さて、それはどんな性質？</p>
+        <ul class="options">
+            <li><strong>A</strong>：人間の集中力は、やればやるほど無限に高まっていく</li>
+            <li><strong>B</strong>：人間の集中力は、短い時間で区切って休憩を挟むと持続しやすい</li>
+            <li><strong>C</strong>：人間の集中力は、好きな音楽を聴いていると一番高まる</li>
+            <li><strong>D</strong>：人間の集中力は、夜中の方が静かで研ぎ澄まされる</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">B</div>
+            <p>「人間の集中力は、短い時間で区切って休憩を挟むと持続しやすい」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">集中と休憩の黄金比！「トマトタイマー」で効率アップ！</h3>
+        <div class="explanation-text">
+            <p>「<span class="strategy-name">ポモドーロテクニック</span>」は、タイマーを使って「25分集中して作業したら、5分短い休憩」というサイクルを繰り返す時間管理術なんだ。これは、人間の集中力には限界があって、長時間ぶっ通しで頑張るよりも、短い作業とこまめな休憩を挟む方が、結果的に集中力が続きやすく、効率も上がるという考えに基づいているよ。</p>
+            <p>25分という短い時間なら「よし、やるか！」って気持ちにもなりやすいし、先延ばし防止にも効果があると言われているんだ。</p>
+            <p class="action-prompt">やってみよう！</p>
+            <ul>
+                <li>勉強を始めるとき、スマホやキッチンタイマーで25分セット！その間は脇目も振らず集中！</li>
+                <li>25分経ったら、5分間は勉強から完全に離れてリフレッシュ。軽いストレッチをしたり、窓の外を眺めたりするのがおすすめ。</li>
+                <li>このサイクルを4回繰り返したら、15分～30分程度の少し長めの休憩を取ろう。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ８】</h2>
+        <p class="question">教科書や参考書を読むとき、ただ文字を目で追うだけじゃ、なかなか頭に入ってこない…。もっと効果的に内容を理解して、記憶に残すための「読み方ステップ」があるとしたら、最初のステップは何だと思う？</p>
+        <ul class="options">
+            <li><strong>A</strong>：いきなり最初から一字一句、丁寧に読み進める</li>
+            <li><strong>B</strong>：まずは章全体の見出しや図、太字などをざーっと眺めて、全体像を掴む</li>
+            <li><strong>C</strong>：ランダムにページを開いて、面白そうなところから読む</li>
+            <li><strong>D</strong>：とりあえず全部読んでから、大事なところに線を引く</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">B</div>
+            <p>「まずは章全体の見出しや図、太字などをざーっと眺めて、全体像を掴む」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">最強の読解術！5ステップで教科書を完全攻略！</h3>
+        <div class="explanation-text">
+            <p>教科書などを効果的に読むための方法の一つに「<span class="strategy-name">SQ3R法（エスキュースリーアールほう）</span>」というものがあるんだ。これは5つのステップで読解を進める方法で、最初の「S」は「Survey（概観する、ざっと見渡す）」の略。</p>
+            <p>読む前にまず、章全体のタイトル、見出し、小見出し、太字のキーワード、図やグラフ、まとめの部分などを数分でざっと眺めて、「これから何について書かれているのかな？」「どんな構成なのかな？」と、全体像を掴むのがポイントだよ。こうすることで、頭の中に「これから読む内容の地図」ができて、細かい部分も理解しやすくなるんだ。</p>
+            <p class="action-prompt">SQ3R法のステップはこれだ！</p>
+            <ol>
+                <li><strong>S (Survey - 概観する)</strong>：ざっと全体を見渡す。</li>
+                <li><strong>Q (Question - 質問する)</strong>：見出しなどから「何が書いてあるんだろう？」と疑問を作る。</li>
+                <li><strong>R1 (Read - 読む)</strong>：作った疑問の答えを探すように、注意深く読む。</li>
+                <li><strong>R2 (Recite - 要約する)</strong>：区切りごとに、内容を自分の言葉で言ってみる、書き出してみる。</li>
+                <li><strong>R3 (Review - 復習する)</strong>：全体を読み終えた後や時間を置いてから、見直して記憶を定着させる。</li>
+            </ol>
+            <p class="action-prompt">やってみよう！</p>
+            <p>教科書を読む前に、まず目次や太字、図をパラパラ見て、何が書いてありそうか予想してみよう。</p>
+        </div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ９】</h2>
+        <p class="question">勉強する場所って大事だよね。次のうち、集中力を高めて勉強がはかどる環境づくりのポイントとして、より適切なのはどれかな？</p>
+        <ul class="options">
+            <li><strong>A</strong>：リラックスできるように、ベッドの上で勉強するのが一番！</li>
+            <li><strong>B</strong>：机の上は、好きなマンガやお菓子を置いて、いつでも気分転換できるようにする</li>
+            <li><strong>C</strong>：勉強する場所を決めて、そこに行ったら勉強モードに切り替わるようにする</li>
+            <li><strong>D</strong>：友達とおしゃべりしながらの方が、楽しくて集中できる</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">C</div>
+            <p>「勉強する場所を決めて、そこに行ったら勉強モードに切り替わるようにする」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">集中スイッチON！キミだけの「最強勉強ゾーン」を作ろう！</h3>
+        <div class="explanation-text">
+            <p>勉強する場所は、集中力に大きく影響するんだ。基本的には「ここで勉強する！」という場所を決めておくと、その場所に行ったときに自然と勉強モードに入りやすくなるよ。</p>
+            <p>逆に、リビングやベッドの上みたいにリラックスしすぎたり、他の活動と結びついている場所は、誘惑も多くて勉強にはあまり向いていないことが多いんだ。机の上が散らかっていると、頭の中もごちゃごちゃしやすくなるから、勉強に関係ないものは片付けて、スッキリした環境で取り組もう。</p>
+            <p class="action-prompt">やってみよう！</p>
+            <ul>
+                <li>自分の部屋の机、図書館の自習室など、自分が一番集中できる「勉強スポット」を見つけよう。</li>
+                <li>勉強を始める前に、机の上を片付けて、教科書やノート、筆記用具など、今から使うものだけを置くようにしよう。</li>
+                <li>時には気分転換に場所を変えてみるのもいいけど（例えば、いつもの自室から図書室へ）、「ここは集中する場所」という意識を持つことが大切だよ。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ１０】</h2>
+        <p class="question">勉強中にスマホの通知がピコン！ついつい見ちゃうけど、これって集中力にどう影響するかな？</p>
+        <ul class="options">
+            <li><strong>A</strong>：ちょっと見るくらいなら、気分転換になって逆に集中力がアップする</li>
+            <li><strong>B</strong>：通知が来ても見ないように我慢すれば、意志力が鍛えられて集中力も高まる</li>
+            <li><strong>C</strong>：一度通知に気を取られると、元の集中状態に戻るのに時間がかかってしまう</li>
+            <li><strong>D</strong>：スマホは勉強の便利ツールだから、常に手の届くところに置いておくべき</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">C</div>
+            <p>「一度通知に気を取られると、元の集中状態に戻るのに時間がかかってしまう」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">デジタル世代の落とし穴？スマホと上手に付き合って集中モード！</h3>
+        <div class="explanation-text">
+            <p>スマートフォンは便利なツールだけど、勉強中に通知が来ると、どうしても気になって集中が途切れがちだよね。研究によると、一度途切れた集中力を元に戻すには、意外と時間がかかると言われているんだ。</p>
+            <p>勉強するときは、スマホの通知をオフにしたり、別の部屋に置いたりして、誘惑そのものを遠ざける工夫をしてみよう。</p>
+            <p class="action-prompt">やってみよう！</p>
+            <ul>
+                <li>勉強を始める前に、スマホを機内モードにするか、通知をオフにする。「勉強専用アプリ」以外は閉じておく。</li>
+                <li>決めた勉強時間が終わるまではスマホを触らない、というルールを自分で作ってみる。</li>
+                <li>家族に預かってもらったり、勉強中はカバンの中にしまっておくのもいいね。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ１１】</h2>
+        <p class="question">「よし、毎日1時間勉強するぞ！」と目標を立てたけど、三日坊主で終わっちゃった…。やる気を長持ちさせて、目標を達成しやすくするには、どんな目標の立て方がいいんだろう？</p>
+        <ul class="options">
+            <li><strong>A</strong>：できるだけ大きな目標を立てて、自分を追い込む</li>
+            <li><strong>B</strong>：「英語をマスターする」みたいに、具体的すぎない、夢のある目標にする</li>
+            <li><strong>C</strong>：「毎日、英単語を10個覚える」みたいに、具体的で達成可能そうな小さな目標にする</li>
+            <li><strong>D</strong>：目標は立てずに、その日の気分でやる内容を決める</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">C</div>
+            <p>「「毎日、英単語を10個覚える」みたいに、具体的で達成可能そうな小さな目標にする」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">やる気スイッチ発見！小さな「できた！」が大きな力に！</h3>
+        <div class="explanation-text">
+            <p>大きな目標も大事だけど、それだけだと「本当にできるかな…」ってプレッシャーに感じて、途中で挫折しやすくなることもあるんだ。それよりも、「毎日、英単語を10個覚える」とか「週末までに、数学の問題集を5ページ進める」みたいに、具体的で、ちょっと頑張れば達成できそうな「小さな目標」を立てるのがコツだよ。</p>
+            <p>（この「学び方レポート」では、モチベーションと目標設定の具体的な科学的根拠の詳細はB-2で解説される予定でしたが、提供資料内では詳細な記述はありませんでした。しかし、レポートの「はじめに」で触れられているように、効果的な学習方略の実践と成功体験は自己効力感（「自分ならできる！」という自信）の向上に繋がり、これが学習意欲全体に貢献すると期待されています。達成可能な小さな目標を立てることは、この成功体験を積み重ねやすくする方法の一つと言えるね。）</p>
+            <p>小さな「できた！」を積み重ねることで、達成感が得られて、「もっと頑張ろう！」という気持ちが湧いてくるはず。</p>
+            <p class="action-prompt">やってみよう！</p>
+            <ul>
+                <li>大きな目標があるなら、それを達成するための小さなステップ（ベイビーステップ）に分けてみよう。</li>
+                <li>目標を達成したら、自分で自分を褒めてあげたり、ちょっとしたご褒美を用意したりするのもいいね！</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ１２】</h2>
+        <p class="question">テスト前、ついつい夜遅くまで勉強しちゃう…。でも、睡眠時間を削って勉強するのって、本当に効果があるのかな？</p>
+        <ul class="options">
+            <li><strong>A</strong>：睡眠時間を削った分、勉強時間が増えるから絶対効果がある</li>
+            <li><strong>B</strong>：寝ている間は勉強できないから、できるだけ起きていた方がいい</li>
+            <li><strong>C</strong>：睡眠は、記憶の整理や定着にとても大切だから、しっかり寝た方がいい</li>
+            <li><strong>D</strong>：眠くなったら仮眠をとれば、何時間寝ても大丈夫</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">C</div>
+            <p>「睡眠は、記憶の整理や定着にとても大切だから、しっかり寝た方がいい」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">寝る子は学ぶ！？睡眠パワーで記憶も集中力もアップ！</h3>
+        <div class="explanation-text">
+            <p>「テスト前だから！」って睡眠時間を削って勉強するのは、実は逆効果になっちゃうこともあるんだ。睡眠には、昼間勉強したことを頭の中で整理して、記憶として定着させる、とっても大切な役割があると言われているよ。</p>
+            <p>（この「学び方レポート」では、生活習慣（睡眠・運動・食事）の具体的な科学的根拠の詳細はB-3で解説される予定でしたが、提供資料内では詳細な記述はありませんでした。しかし、一般的に、質の高い睡眠は、記憶力だけでなく、次の日の集中力や思考力を高めるためにも不可欠とされています。）</p>
+            <p>しっかり寝ることで、勉強した内容がしっかり身につくだけでなく、日中の集中力も高まって、勉強がもっとはかどるようになるんだ。</p>
+            <p class="action-prompt">やってみよう！</p>
+            <ul>
+                <li>自分に必要な睡眠時間を知って、毎日なるべく同じ時間に寝起きする習慣をつけよう。</li>
+                <li>寝る前はスマホやゲームを控えて、リラックスできる環境を整えよう。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ１３】</h2>
+        <p class="question">「運動すると頭が良くなる」って聞いたことあるけど、ホントかな？勉強の合間に軽い運動を取り入れるのは、学習にとってどんな影響がある？</p>
+        <ul class="options">
+            <li><strong>A</strong>：疲れるだけで、勉強にはマイナスでしかない</li>
+            <li><strong>B</strong>：運動で脳がスッキリして、記憶力や集中力アップに繋がることも！</li>
+            <li><strong>C</strong>：運動する時間があったら、その分勉強した方がいい</li>
+            <li><strong>D</strong>：激しい運動をすればするほど、頭も冴えわたる</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">B</div>
+            <p>「運動で脳がスッキリして、記憶力や集中力アップに繋がることも！」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">体も頭もリフレッシュ！運動で脳を元気にしよう！</h3>
+        <div class="explanation-text">
+            <p>勉強の合間に適度な運動を取り入れることは、実は脳にとっても良い効果があるんだ。運動すると血行が良くなって、脳に酸素や栄養が行き渡りやすくなる。その結果、記憶力や集中力、思考力が高まる可能性があると言われているよ。</p>
+            <p>この「学び方レポート」の「分散学習」のコツの中でも、「アクティブレスト」として、学習の合間に軽い運動を取り入れることが、脳を活性化させ、記憶力や集中力を高めるのに役立つと紹介されているよ。（レポートのB-3「生活習慣（運動）」で詳細が期待されましたが、具体的な記述は提供資料にはありませんでした。）</p>
+            <p class="action-prompt">やってみよう！</p>
+            <ul>
+                <li>勉強の合間に、ストレッチをしたり、少し散歩をしたりする「アクティブレスト」を取り入れてみよう。</li>
+                <li>長時間座りっぱなしにならないように、30分～1時間に一度は立ち上がって体を動かすのもいいね。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide slide-quiz">
+        <h2 class="quiz-number">【クイズ１４】</h2>
+        <p class="question">勉強を計画的に進めたい！でも、どこから手をつけていいかわからない…。そんなとき、まず何をすると学習計画が立てやすくなるかな？</p>
+        <ul class="options">
+            <li><strong>A</strong>：とにかく思いつくままに、やりたいことから始めてみる</li>
+            <li><strong>B</strong>：やるべきことを全部リストアップして、それぞれにどれくらい時間がかかりそうか見積もってみる</li>
+            <li><strong>C</strong>：友達の勉強計画を参考にして、そっくり真似てみる</li>
+            <li><strong>D</strong>：計画は立てずに、その日の気分と勢いで乗り切る</li>
+        </ul>
+    </section>
+    <section class="slide slide-answer-reveal">
+        <div class="answer-reveal-content">
+            <h2>正解は……</h2>
+            <div class="correct-option-letter">B</div>
+            <p>「やるべきことを全部リストアップして、それぞれにどれくらい時間がかかりそうか見積もってみる」でした！</p>
+        </div>
+    </section>
+    <section class="slide slide-explanation">
+        <h3 class="explanation-title">未来の自分を助ける！「やることリスト」で計画名人に！</h3>
+        <div class="explanation-text">
+            <p>やみくもに勉強を始めるよりも、まずは「何を」「いつまでに」「どれくらい」やる必要があるのかをハッキリさせることが、上手な時間管理の第一歩だよ。</p>
+            <p>（この「学び方レポート」のB部では「時間管理」も学習効果を高める要因として挙げられていますが、提供資料内では具体的な方法はA部の「ポモドーロテクニック」 や「分散学習」の計画性 に関連して述べられています）。</p>
+            <p>やるべきことをリストアップして、それぞれにかかる時間を見積もることで、無理のない計画が立てられるし、優先順位もつけやすくなるんだ。「分散学習」のように、復習のタイミングをあらかじめ計画に組み込んでおけば、記憶の定着もバッチリだね。</p>
+            <p class="action-prompt">やってみよう！</p>
+            <ul>
+                <li>まずは、テストまでの日数や、やるべき教科・範囲を書き出してみよう。</li>
+                <li>次に、各タスクを「いつまでに終わらせるか」デッドラインを設定して、カレンダーや手帳に書き込んでみよう。</li>
+                <li>大きなタスクは、もっと小さなタスクに分解すると、取り組みやすくなるよ。</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide slide-final">
+        <header class="slide-header">
+            <h1>クイズ読了おめでとう！</h1>
+            <p class="final-message">たくさんの「学びのコツ」を発見できたかな？<br>
+            大切なのは、いろいろ試して、自分にピッタリの「最強の学び方」を見つけること。<br>
+            今日から一つでもいいから、新しいやり方を試してみてね！<br>
+            キミの学びが、もっと楽しく、もっと実りあるものになるように応援してるよ！</p>
+        </header>
+        <div class="placeholder-img" style="width:450px; height:253px;">[イラスト：ゴールテープを切る生徒や、キラキラした未来へ進む生徒]</div>
+    </section>
+
+</div>
+
+<script>
+    // オプション選択時のインタラクションやスライド遷移のロジックはここに記述します。
+    // このHTMLファイルをブラウザで直接開いた場合、ここでのJavaScriptは
+    // スムーズなスライドショー機能（例：ボタンクリックで次のスライドへ移動）を提供するために必要になります。
+
+    // 以下は非常に基本的なスライド遷移の例（実際の運用にはより洗練されたコードが必要です）
+
+    // const slides = document.querySelectorAll('.slide');
+    // let currentSlide = 0;
+
+    // function showSlide(index) {
+    //     slides.forEach((slide, i) => {
+    //         // CSSで制御する場合、表示/非表示クラスを切り替える
+    //         // ここでは単純なスクロール例
+    //         if (i === index) {
+    //             slide.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    //         }
+    //     });
+    // }
+
+    // // 例えば、各スライドに「次へ」ボタンを配置して、それをクリックしたら
+    // // currentSlide++; showSlide(currentSlide); のようにする。
+    // // また、オプション選択後に自動で回答スライドへ遷移するなども考えられます。
+
+    // // 初期表示
+    // // if(slides.length > 0) {
+    // //    showSlide(currentSlide);
+    // // }
+</script>
+
+</body>
+</html>
+```
